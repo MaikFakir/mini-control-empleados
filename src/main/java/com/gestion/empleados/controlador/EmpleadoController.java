@@ -1,9 +1,15 @@
 package com.gestion.empleados.controlador;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.apache.poi.ss.usermodel.DataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +26,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.gestion.empleados.entidades.Empleado;
 import com.gestion.empleados.servicio.EmpleadoService;
 import com.gestion.empleados.util.paginacion.PageRender;
+import com.gestion.empleados.util.reportes.EmpleadoExporterPDF;
+import com.lowagie.text.DocumentException;
+
 
 @Controller
 public class EmpleadoController {
@@ -35,7 +44,7 @@ public class EmpleadoController {
 			return "redirect:/listar";
 		}
 		modelo.put("empleado",empleado);
-		modelo.put("titulo","Detalles del empleado"+empleado.getNombre());
+		modelo.put("titulo","Detalles del empleado "+empleado.getNombre());
 		return "ver";
 		
 	}
@@ -76,7 +85,7 @@ public class EmpleadoController {
 		return "redirect:/listar";
 	}
 
-	@GetMapping("/form{id}")
+	@GetMapping("/form/{id}")
 	public String editarEmpleado(@PathVariable(value = "id") Long id,Map<String,Object> modelo,RedirectAttributes flash) {
 		Empleado empleado = null;
 		if(id > 0){
@@ -102,6 +111,25 @@ public class EmpleadoController {
 		flash.addFlashAttribute("success","Cliente eliminado con exito");
 	}
 	return "redirect:/listar";
+	}
+
+	@GetMapping("/exportarPDF")
+	public void exportarListadoDeEmpleadosEnPDF(HttpServletResponse response) throws DocumentException, IOException{
+		response.setContentType("application/pdf");
+
+		SimpleDateFormat dateFormatter = new SimpleDateFormat("yy yy-MM-dd_HH:mm:ss");
+		String fechaActual = dateFormatter.format(new Date());
+
+		String cabecera = "Content-Disposition";
+		String valor = "attachment; filename=Clientes_" + fechaActual +".pdf";
+
+		response.setHeader(cabecera,valor);
+
+		List<Empleado> empleados = empleadoService.findAll();
+		
+		EmpleadoExporterPDF exporter = new EmpleadoExporterPDF(empleados);
+		exporter.exportar(response);
+		
 	}
 
 

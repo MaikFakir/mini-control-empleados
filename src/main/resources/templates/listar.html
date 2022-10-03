@@ -19,6 +19,13 @@
         <div class="card bg-light">
             <div class="card-header" th:text="${titulo}"></div>
             <div class="card-body">
+                <h4 class="card-title">
+                    <a th:href="@{/form}" class="btn btn-primary">Agregar Empleado</a>
+
+                    <a th:href="@{/exportarPDF}" class="btn btn-secondary">Exportar a PDF</a>
+
+                    <a th:href="@{/exportarExcel}" class="btn btn-success">Agregar a Excel</a>
+                </h4>
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -42,6 +49,15 @@
                             <td th:text="${empleado.telefono}"></td>
                             <td th:text="${empleado.sexo}"></td>
                             <td th:text="${empleado.salario}"></td>
+                            <td>
+                                <a class="btn btn-info btn-sm" th:href="@{/ver/} + ${empleado.id}">Detalles</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-warning btn-sm" th:href="@{/form/} + ${empleado.id}">Editar</a>
+                            </td>
+                            <td>
+                                <a class="btn btn-danger btn-sm" th:href="@{/eliminar/} + ${empleado.id}" onclick="return confirm('¿Estas seguro de eliminar al empleado?')">Eliminar</a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
